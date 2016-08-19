@@ -12,52 +12,54 @@
 
 from django.utils.translation import ugettext_lazy as _
 
-from horizon import tabs
 from horizon import exceptions
+from horizon import tables
 
 from openstack_dashboard import api
 
-from openstack_dashboard.dashboards.mydashboard.flavorpanel import tabs as mydashboard_tabs
+from openstack_dashboard.dashboards.mydashboard.flavorpanel import tables as flavor_tables
 
-class IndexView(tabs.TabbedTableView):
+class IndexView(tables.DataTableView):
     # A very simple class-based view...
-    tab_group_class = mydashboard_tabs.MypanelTabs
+    # tab_group_class = mydashboard_tabs.MypanelTabs
+    table_class = flavor_tables.FlavorsTable
     template_name = 'mydashboard/flavorpanel/index.html'
+    page_title = _("Flavor")
 
-    def get_data(self, request, context, *args, **kwargs):
-        # Add data to the context here...
-        return context
+    # def get_data(self, request, context, *args, **kwargs):
+    #     # Add data to the context here...
+    #     return context
 
     # def has_prev_data(self, table):
     #     return self._prev
     #
     # def has_more_data(self, table):
     #     return self._more
-    #
-    # def get_data(self):
-    #     request = self.request
-    #     prev_marker = request.GET.get(
-    #         mydashboard_tabs.FlavorsTable._meta.prev_pagination_param, None)
-    #
-    #     if prev_marker is not None:
-    #         marker = prev_marker
-    #     else:
-    #         marker = request.GET.get(
-    #             mydashboard_tabs.FlavorsTable._meta.pagination_param, None)
-    #     reversed_order = prev_marker is not None
-    #     flavors = []
-    #     try:
-    #         # Removing the pagination params and adding "is_public=None"
-    #         # will return all flavors.
-    #         flavors, self._more, self._prev = api.nova.flavor_list_paged(
-    #             request, None,
-    #             marker=marker,
-    #             paginate=True,
-    #             sort_dir='asc',
-    #             sort_key='name',
-    #             reversed_order=reversed_order)
-    #     except Exception:
-    #         self._prev = self._more = False
-    #         exceptions.handle(request,
-    #                           _('Unable to retrieve flavor list.'))
-    #     return flavors
+
+    def get_data(self):
+        request = self.request
+        prev_marker = request.GET.get(
+            flavor_tables.FlavorsTable._meta.prev_pagination_param, None)
+
+        if prev_marker is not None:
+            marker = prev_marker
+        else:
+            marker = request.GET.get(
+                flavor_tables.FlavorsTable._meta.pagination_param, None)
+        reversed_order = prev_marker is not None
+        flavors = []
+        try:
+            # Removing the pagination params and adding "is_public=None"
+            # will return all flavors.
+            flavors, self._more, self._prev = api.nova.flavor_list_paged(
+                request, None,
+                marker=marker,
+                paginate=True,
+                sort_dir='asc',
+                sort_key='name',
+                reversed_order=reversed_order)
+        except Exception:
+            self._prev = self._more = False
+            exceptions.handle(request,
+                              _('Unable to retrieve flavor list.'))
+        return flavors
