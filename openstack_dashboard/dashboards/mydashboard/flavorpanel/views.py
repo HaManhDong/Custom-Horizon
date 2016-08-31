@@ -11,13 +11,17 @@
 # under the License.
 
 from django.utils.translation import ugettext_lazy as _
+from django import http
+from django.http import JsonResponse
 
 from horizon import exceptions
 from horizon import tables
 
 from openstack_dashboard import api
+import json
 
 from openstack_dashboard.dashboards.mydashboard.flavorpanel import tables as flavor_tables
+
 
 class IndexView(tables.DataTableView):
     # A very simple class-based view...
@@ -26,9 +30,47 @@ class IndexView(tables.DataTableView):
     template_name = 'mydashboard/flavorpanel/index.html'
     page_title = _("Flavor")
 
-    # def get_data(self, request, context, *args, **kwargs):
-    #     # Add data to the context here...
-    #     return context
+    def get_context_data(self, **kwargs):
+        # Add data to the context here...
+        context = super(IndexView, self).get_context_data(**kwargs)
+        context['demo'] = "Controller=1|Compute=2|Object Storage=3|Block Storage=4"
+        # abc = {}
+        # abc["series"] = [
+        #       {
+        #         "name": "instance-00000005",
+        #         "data": [
+        #           {"y": 171, "x": "2013-08-21T11:22:25"},
+        #           {"y": 172, "x": "2013-08-21T11:22:26"}
+        #         ]
+        #       }, {
+        #         "name": "instance-00000006",
+        #         "data": [
+        #           {"y": 161, "x": "2013-08-21T11:22:25"},
+        #           {"y": 162, "x": "2013-08-21T11:22:26"}
+        #         ]
+        #       }
+        #     ]
+        # abc["settings"] = {}
+        dataTest = {
+            "series": [
+              {
+                "name": "instance-00000005",
+                "data": [
+                  {"y": 171, "x": "2013-08-21T11:22:25"},
+                  {"y": 172, "x": "2013-08-21T11:22:26"}
+                ]
+              }, {
+                "name": "instance-00000006",
+                "data": [
+                  {"y": 161, "x": "2013-08-21T11:22:25"},
+                  {"y": 162, "x": "2013-08-21T11:22:26"}
+                ]
+              }
+            ],
+            "settings": {}
+        }
+        context['dataLineChar'] = json.dumps(dataTest,ensure_ascii=False)
+        return context
 
     # def has_prev_data(self, table):
     #     return self._prev
@@ -51,7 +93,7 @@ class IndexView(tables.DataTableView):
         try:
             # Removing the pagination params and adding "is_public=None"
             # will return all flavors.
-            flavors, self._more, self._prev = api.nova.flavor_list_paged(
+            flavors, self._more, self._prev = api.myapi.flavor_list_paged(
                 request, None,
                 marker=marker,
                 paginate=True,
@@ -62,4 +104,5 @@ class IndexView(tables.DataTableView):
             self._prev = self._more = False
             exceptions.handle(request,
                               _('Unable to retrieve flavor list.'))
+
         return flavors

@@ -23,6 +23,16 @@ class CreateSnapshotAction(tables.LinkAction):
 class MyFilterAction(tables.FilterAction):
     name = "myfilter"
 
+class RenameInstanceAction(tables.LinkAction):
+    naoe = "rename"
+    verbose_name = _("Rename Instance")
+    url = "horizon:mydashboard:mypanel:rename_instance"
+    classes = ("ajax-modal",)
+    icon = "camera"
+
+    def allowed(self, request, instance=None):
+        return instance and not is_deleting(instance)
+
 class InstancesTable(tables.DataTable):
     name = tables.Column("name", verbose_name=_("Name"))
     status = tables.Column("status", verbose_name=_("Status"))
@@ -33,4 +43,4 @@ class InstancesTable(tables.DataTable):
         name = "instances"
         verbose_name = _("Instance")
         table_actions = (MyFilterAction,)
-        row_actions = (CreateSnapshotAction,)
+        row_actions = (CreateSnapshotAction,RenameInstanceAction)

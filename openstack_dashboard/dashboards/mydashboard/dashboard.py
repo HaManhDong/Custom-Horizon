@@ -17,7 +17,7 @@ import horizon
 class Mygroup(horizon.PanelGroup):
     slug = "mygroup"
     name = _("My Group")
-    panels = ('mypanel','flavorpanel',)
+    panels = ('mypanel','flavorpanel','lognovaapi','newpanel')
 
 class Mydashboard(horizon.Dashboard):
     name = _("donghm")

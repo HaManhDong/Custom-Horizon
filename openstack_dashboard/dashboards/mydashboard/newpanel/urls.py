@@ -12,13 +12,9 @@
 
 from django.conf.urls import url
 
-from openstack_dashboard.dashboards.mydashboard.mypanel import views
+from openstack_dashboard.dashboards.mydashboard.newpanel import views
 
 
 urlpatterns = [
     url(r'^$', views.IndexView.as_view(), name='index'),
-    url(r'^(?P<instance_id>[^/]+)/create_snapshot/$',
-        views.CreateSnapshotView.as_view(),
-        name='create_snapshot'),
-    url(r'^(?P<instance_id>[^/]+)/rename_instance/$',views.RenameInstance.as_view(),name='rename_instance')
 ]

@@ -60,3 +60,30 @@ class CreateSnapshotView(forms.ModalFormView):
         context['submit_url'] = reverse(self.submit_url, args=[instance_id])
         return context
 
+class RenameInstance(forms.ModalFormView):
+    form_class = project_forms.RenameInstance
+    template_name = 'mydashboard/mypanel/rename_instance.html'
+    success_url = reverse_lazy("horizon:project:instances:index")
+    modal_id = "rename_instance_modal"
+    modal_header = _("Rename Instance")
+    submit_label = _("Change")
+    submit_url = "horizon:mydashboard:mypanel:rename_instance"
+
+    def get_object(self):
+        try:
+            return api.nova.server_get(self.request,
+                                       self.kwargs["instance_id"])
+        except Exception:
+            exceptions.handle(self.request,
+                              _("Unable to retrieve instance."))
+
+    def get_initial(self):
+        return {"instance_id": self.kwargs["instance_id"]}
+
+    def get_context_data(self, **kwargs):
+        context = super(RenameInstance, self).get_context_data(**kwargs)
+        instance_id = self.kwargs['instance_id']
+        context['instance_id'] = instance_id
+        context['instance'] = self.get_object()
+        context['submit_url'] = reverse(self.submit_url, args=[instance_id])
+        return context

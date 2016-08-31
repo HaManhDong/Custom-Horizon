@@ -8,6 +8,13 @@
 
 {% block main %}
 <div class="row">
+
+    <div id="line_chart"
+        data-chart-type="line_chart"
+        data-data= "{{ dataLineChar }}"
+        data-form-selector='#linechart_general_form'>
+    </div>
+
    <div class="col-sm-12">
    {{ table.render }}
    </div>

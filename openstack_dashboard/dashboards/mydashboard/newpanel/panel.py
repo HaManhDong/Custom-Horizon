@@ -10,15 +10,14 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-from django.conf.urls import url
+from django.utils.translation import ugettext_lazy as _
 
-from openstack_dashboard.dashboards.mydashboard.mypanel import views
+import horizon
+from openstack_dashboard.dashboards.mydashboard import dashboard
+
+class Newpanel(horizon.Panel):
+    name = _("New panel")
+    slug = "newpanel"
 
 
-urlpatterns = [
-    url(r'^$', views.IndexView.as_view(), name='index'),
-    url(r'^(?P<instance_id>[^/]+)/create_snapshot/$',
-        views.CreateSnapshotView.as_view(),
-        name='create_snapshot'),
-    url(r'^(?P<instance_id>[^/]+)/rename_instance/$',views.RenameInstance.as_view(),name='rename_instance')
-]
+dashboard.Mydashboard.register(Newpanel)
